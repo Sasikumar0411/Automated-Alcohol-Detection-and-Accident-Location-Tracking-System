@@ -1,0 +1,50 @@
+// Include necessary libraries
+#include <LiquidCrystal.h>
+
+// Define pin numbers
+const int alcoholSensorPin = A0;   // Analog pin for alcohol sensor
+const int lockingPin = 13;         // Digital pin for locking mechanism
+
+// Initialize LCD display
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+
+void setup() {
+  // Setup alcohol sensor pin as input
+  pinMode(alcoholSensorPin, INPUT);
+  // Setup locking pin as output
+  pinMode(lockingPin, OUTPUT);
+
+  // Initialize LCD display
+  lcd.begin(16, 2);
+  lcd.print("Alcohol Detect");
+}
+
+void loop() {
+  // Read alcohol sensor value
+  int alcoholValue = analogRead(alcoholSensorPin);
+
+  // Convert analog value to percentage (assuming 0 to 1023 range)
+  int alcoholPercentage = map(alcoholValue, 0, 1023, 0, 100);
+
+  // Display alcohol percentage on LCD
+  lcd.setCursor(0, 1);
+  lcd.print("Alc: ");
+  lcd.print(alcoholPercentage);
+  lcd.print("%  ");
+
+  // Check if alcohol percentage is above threshold (adjust threshold as needed)
+  if (alcoholPercentage > 30) {
+    // Alcohol detected, lock the vehicle
+    digitalWrite(lockingPin, HIGH);
+    lcd.setCursor(0, 0);
+    lcd.print("Vehicle Locked ");
+  } else {
+    // No alcohol detected, unlock the vehicle
+    digitalWrite(lockingPin, LOW);
+    lcd.setCursor(0, 0);
+    lcd.print("                "); // Clear previous message
+  }
+
+  // Delay for stability (adjust as needed)
+  delay(500);
+}
